@@ -55,7 +55,6 @@ public abstract class Kaestchen extends JFrame {
 	private Color farbeDurchsichtig = new Color(0, 0, 0, 0);
 	private BufferedImage hintergrundbild;
 	private boolean autopaint = true;
-	private double zoom = 1;
 	private int startY = 0;
 	private int startX = 0;
 
@@ -617,7 +616,6 @@ public abstract class Kaestchen extends JFrame {
 	public void kaestchenInMitteSetzen(int x, int y) {
 		startX = fensterbreite / 2 - x * kaestchenBreite;
 		startY = fensterhoehe / 2 - y * kaestchenHoehe;
-		zoom = 1;
 		if (autopaint)
 			repaint();
 	}

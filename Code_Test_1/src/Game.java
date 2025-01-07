@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,8 @@ public class Game extends Kaestchen {
 
     public void start() {
         initialize();
-        move(STARTX,STARTY,STARTX,STARTY);
+        move(STARTX,STARTY,STARTX,STARTY, getQuantity(STARTX, STARTY));
+        tick();
         print();
     }
 
@@ -28,24 +30,10 @@ public class Game extends Kaestchen {
         matrix[STARTX][STARTY] = 9.9f;
     }
 
-    public void move(int x, int y, int ox, int oy) {
-        print();
-        //time removal
-        
+    public void move(int x, int y, int ox, int oy, int quantity) {
+        tick();
 
-        // getting neighbours
-        int[] startup = {-ox+x, -oy+y};
-        //  System.out.println("X: "+x+" | Y: "+y);
-        //  System.out.println("StartupX: "+-ox+"+"+x +" | StartupY: "+-oy+"+"+y);
-        List<int[]> neighbours = getNeighbours(x, y, (int) Math.ceil(getPower(x, y) / 5.0), startup);
-
-        // setting neighbour to -1 power and 9 time & move
-        for (int[] neighbour : neighbours) {
-            //  System.out.println("neighbour" + Arrays.toString(neighbour));
-            //  System.out.println("Calling: x=" + neighbour[0] + ", y=" + neighbour[1] + ", ox=" + x + ", oy=" + y);
-            matrix[x + neighbour[0]][y + neighbour[1]] = getPower(x, y) - 1 + 0.9f;
-            move(x + neighbour[0], y + neighbour[1], x, y);
-        }
+        if (getPower(x, y) <= 0) { return; }
 
         try {
             Thread.sleep(1000); // 1000 Millisekunden = 1 Sekunde
@@ -53,6 +41,25 @@ public class Game extends Kaestchen {
             Thread.currentThread().interrupt(); // Setzt den Unterbrechungsstatus wieder
             System.out.println("Thread wurde unterbrochen: " + e.getMessage());
         }
+
+        int[] startup = {-ox+x, -oy+y};
+        for (int i=0; i < quantity; i++) {
+            int[] neighbour = getNeighbour(x, y, startup);
+            if (neighbour[0] == 0 && neighbour[1] == 0) { return; }
+            int nx = x + neighbour[0];
+            int ny = y + neighbour[1];
+            matrix[nx][ny] = getPower(x, y) - 1 + 0.9f;
+            move(nx, ny, x, y, getQuantity(nx, ny)+1);
+        }
+    }
+
+    public int[] getNeighbour(int x, int y, int[] startup) {
+        List<int[]> list = getNeighbours(x, y, 8, startup);
+        for (int i = 0; i < list.size();) {
+            return list.get(i);
+        }
+        int[] result = {0,0};
+        return result;
     }
 
     public List<int[]> getNeighbours(int x, int y, int quantity, int[] startup) {
@@ -80,7 +87,11 @@ public class Game extends Kaestchen {
         //  System.out.println("Sx: " + sx + " | Sy: " + sy);
         neighbours.add(new int[]{localmatrix[sx][sy][0], localmatrix[sx][sy][1]});
 
+        // remove the possibility to set itself
         neighbours.removeIf(neighbour -> neighbour[0] == 0 && neighbour[1] == 0);
+
+        // remove the possibility to get onto another existing
+        neighbours.removeIf(neighbour -> getTime(x+neighbour[0], y+neighbour[1]) != 0 && getPower(x+neighbour[0], y+neighbour[1]) < getPower(x, y));
 
         Collections.shuffle(neighbours);
         
@@ -91,8 +102,8 @@ public class Game extends Kaestchen {
         for (int y = 1; y <= 40; y++) {
             for (int x = 1; x <= 40; x++) {
                 farbeSetzen(x, y, getColor(x, y));
-                //System.out.print(matrix[x-1][y-1] + "|");
-                System.out.print(getPower(x, y) + "|");
+                System.out.print(matrix[x-1][y-1] + "|");
+                //System.out.print(getPower(x, y) + "|");
             }
             System.out.println();
         }
@@ -119,12 +130,33 @@ public class Game extends Kaestchen {
         }
     }
 
+    public void tick() {
+        for (int y = 1; y <= 40; y++) {
+            for (int x = 1; x <= 40; x++) {
+                if (getTime(x,y) != 0 && getPower(x, y) > 0) {
+                    //BigDecimal value = new BigDecimal(Float.toString(matrix[x][y]));
+                    //System.out.println(value + " | " + value.subtract(new BigDecimal("0.1")).floatValue());
+                    //matrix[x][y] = value.subtract(new BigDecimal("0.1")).floatValue();
+                    matrix[x][y] = getPower(x, y) + ((float) (getTime(x, y)-1) / 10);
+                    if (matrix[x][y] < 0) {
+                        matrix[x][y] = 0;
+                    }
+                }
+            }
+        }
+        print();
+    }
+
     public int getPower(int x, int y) {
         return (int) Math.floor(matrix[x][y]);
     }
 
     public int getTime(int x, int y) {
         return (int) ((matrix[x][y] - ((int) Math.floor(matrix[x][y]))) * 10);
+    }
+
+    public int getQuantity(int x, int y) {
+        return Math.max(0, ((int) Math.ceil(getPower(x, y))-3)/2);
     }
 
 }
