@@ -29,6 +29,10 @@ public class Game extends Kaestchen {
     }
 
     public void move(int x, int y, int ox, int oy) {
+        print();
+        //time removal
+        
+
         // getting neighbours
         int[] startup = {-ox+x, -oy+y};
         //  System.out.println("X: "+x+" | Y: "+y);
@@ -41,6 +45,13 @@ public class Game extends Kaestchen {
             //  System.out.println("Calling: x=" + neighbour[0] + ", y=" + neighbour[1] + ", ox=" + x + ", oy=" + y);
             matrix[x + neighbour[0]][y + neighbour[1]] = getPower(x, y) - 1 + 0.9f;
             move(x + neighbour[0], y + neighbour[1], x, y);
+        }
+
+        try {
+            Thread.sleep(1000); // 1000 Millisekunden = 1 Sekunde
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Setzt den Unterbrechungsstatus wieder
+            System.out.println("Thread wurde unterbrochen: " + e.getMessage());
         }
     }
 
@@ -85,22 +96,22 @@ public class Game extends Kaestchen {
             }
             System.out.println();
         }
+        repaint();
     }
 
     public Color getColor(int x, int y) {
         switch (getPower(x, y)) {
             case 9:
-                return Color.GREEN;
             case 8:
             case 7:
             case 6:
-                return Color.YELLOW;
             case 5:
+                return Color.GREEN;
             case 4:
             case 3:
             case 2:
             case 1:
-                return Color.ORANGE;
+                return Color.YELLOW;
             case 0:
                 return Color.WHITE;
             default:
