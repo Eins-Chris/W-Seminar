@@ -22,20 +22,19 @@ public class Simulation extends Kaestchen {
     public void initialize() {
         // starting point
         powerGrid[SIZE/2][SIZE/2] = INITIAL_POWER;
-        farbeSetzen(SIZE/2+1, SIZE/2+1, Color.GREEN);
+        farbeSetzen(SIZE/2+1, SIZE/2+1, getColor(INITIAL_POWER));
 
         // food
         farbeSetzen(SIZE/2+1, SIZE/2+6, Color.ORANGE);
 
         //wall
         for (int i = 0; i < SIZE; i++) {
-            farbeSetzen(i, SIZE/2+4, Color.BLACK);
+            farbeSetzen(i, SIZE/2+4, getColor(-1));
         }
         farbeSetzen(SIZE/2+1, SIZE/2+4, "durchsichtig");
     }
 
     public void tick(int nr) {
-        // Growth (neighbours with "less" power)
         grow();
         repaint();
     }
@@ -46,6 +45,7 @@ public class Simulation extends Kaestchen {
         int idk = 0;
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
+                // spreading
                 if (powerGrid[x][y] > 0) {
                     List<int[]> neighbors = getShuffledNeighbors(x, y);
                     boolean branched = false;
@@ -71,6 +71,10 @@ public class Simulation extends Kaestchen {
                         }
                     }
                 }
+                // backfinding
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                // stop counter
                 idk += powerGrid[x][y];
             }
         }
@@ -83,7 +87,7 @@ public class Simulation extends Kaestchen {
     public int check(int x, int y, int value) {
         if (farbeGeben(x+1, y+1).equals("grün") || farbeGeben(x+1, y+1).equals("weiß") || farbeGeben(x+1, y+1).equals("gelb") || farbeGeben(x+1, y+1).equals("durchsichtig")) {
             return value;
-        } else if ( farbeGeben(x+1, y+1).equals("orange")) {
+        } else if (farbeGeben(x+1, y+1).equals("orange")) {
             return INITIAL_POWER;
         } else if (farbeGeben(x+1, y+1).equals("schwarz")) {
             return -1;
@@ -108,7 +112,7 @@ public class Simulation extends Kaestchen {
 
     public Color getColor(int value) {
         switch (value) {
-            case SIZE:
+            case INITIAL_POWER:
                 return Color.GREEN;
             case 0:
                 return Color.WHITE;

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Simulation extends Kaestchen {
+public class Simulationy extends Kaestchen {
 
     private static final int SIZE = 40;
     private static final int INITIAL_POWER = 20;
@@ -12,7 +12,7 @@ public class Simulation extends Kaestchen {
     private int[][] powerGrid = new int[SIZE][SIZE];
     private Random random = new Random();
 
-    public Simulation() {
+    public Simulationy() {
         super(20, 20, SIZE, SIZE);
         initialize();
         tickerStart(1, 200);
@@ -92,7 +92,7 @@ public class Simulation extends Kaestchen {
     }
 
     public static void main(String[] args) {
-        new Simulation();
+        new Simulationy();
     }
 
     public void testausgabe() {

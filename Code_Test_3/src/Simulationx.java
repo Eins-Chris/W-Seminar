@@ -76,7 +76,7 @@ public class Simulationx extends Kaestchen {
     }
 
     public static void main(String[] args) {
-        new Simulation();
+        new Simulationx();
     }
 
     public void testausgabe() {
