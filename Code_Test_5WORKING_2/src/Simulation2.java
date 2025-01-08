@@ -7,7 +7,8 @@ import java.util.Random;
 public class Simulation2 extends Kaestchen {
 
     private static final int SIZE = 40;
-    private static final int INITIAL_POWER = 30;
+    private static final int FOODOFFSET = -10;
+    private static final int INITIAL_POWER = 20;
     private static final int SPEED = 200;
 
     private int[][] powerGrid = new int[SIZE][SIZE];
@@ -17,26 +18,42 @@ public class Simulation2 extends Kaestchen {
         super(20, 20, SIZE, SIZE);
         initialize();
         tickerStart(1, SPEED);
-        testausgabe();
     }
 
     public void initialize() {
         // starting point
-        powerGrid[SIZE/2][SIZE/2] = INITIAL_POWER;
-        farbeSetzen(SIZE/2+1, SIZE/2+1, getColor(INITIAL_POWER));
+        powerGrid[SIZE/2][2] = INITIAL_POWER;
+        farbeSetzen(SIZE/2+1, 2+1, getColor(INITIAL_POWER));
 
         // food
-        farbeSetzen(SIZE/2+1, SIZE/2+8, Color.ORANGE);
+        farbeSetzen(SIZE/2+1, SIZE/2+1+FOODOFFSET, Color.ORANGE);
+        farbeSetzen(SIZE/2+1, SIZE/2+1-2, Color.ORANGE);
 
-        //wall
-        for (int i = 0; i < SIZE; i++) {
-            farbeSetzen(i, SIZE/2+4, getColor(-1));
+        // wall
+        /* for (int i = 0; i < SIZE; i++) {
+            for (int j = 5; j < 10; j++) {
+                farbeSetzen(i+1, j+1, getColor(-1));
+            }
         }
-        farbeSetzen(SIZE/2+1, SIZE/2+4, "durchsichtig");
-
-        for (int i = SIZE/4+5; i < SIZE/4*3-7; i++) {
-            farbeSetzen(i, SIZE/2+6, getColor(-1));
-        }
+        farbeSetzen(SIZE/2+1, 5+1, "durchsichtig");
+        farbeSetzen(SIZE/2+1, 6+1, "durchsichtig");
+        farbeSetzen(SIZE/2+1, 7+1, "durchsichtig");
+        farbeSetzen(SIZE/2+1, 8+1, "durchsichtig");
+        
+        farbeSetzen(SIZE/2+2, 8+1, "durchsichtig");
+        farbeSetzen(SIZE/2+3, 8+1, "durchsichtig");
+        farbeSetzen(SIZE/2+3, 7+1, "durchsichtig");
+        
+        farbeSetzen(SIZE/2, 6+1, "durchsichtig");
+        farbeSetzen(SIZE/2-1, 6+1, "durchsichtig");
+        farbeSetzen(SIZE/2-2, 6+1, "durchsichtig");
+        farbeSetzen(SIZE/2-3, 6+1, "durchsichtig");
+        farbeSetzen(SIZE/2-3, 7+1, "durchsichtig");
+        
+        farbeSetzen(SIZE/2-1, 8+1, "durchsichtig");
+        farbeSetzen(SIZE/2-2, 8+1, "durchsichtig");
+        farbeSetzen(SIZE/2-2, 9+1, "durchsichtig");
+        farbeSetzen(SIZE/2-3, 8+1, "durchsichtig"); */
     }
 
     public void tick(int nr) {
@@ -45,7 +62,8 @@ public class Simulation2 extends Kaestchen {
             repaint();
         }
         if (nr == 2) {
-            
+            // sendImpulse();
+            tickerStop(2);
         }
     }
 
@@ -71,7 +89,6 @@ public class Simulation2 extends Kaestchen {
                                 newPowerGrid[nx][ny] = check(nx, ny, newPowerGrid[nx][ny]);
                                 farbeSetzen(nx + 1, ny + 1, getColor(newPowerGrid[nx][ny]));
 
-                                // Erlaubt gelegentlich eine Verzweigung
                                 if (!branched && random.nextDouble() < 0.3) {
                                     branched = true;
                                 } else {
@@ -93,7 +110,7 @@ public class Simulation2 extends Kaestchen {
             tickerStop(1);
             tickerStart(2, SPEED);
         }
-        testausgabe();
+        //testausgabe();
     }
 
     public int check(int x, int y, int value) {
@@ -134,6 +151,119 @@ public class Simulation2 extends Kaestchen {
                 return Color.GREEN;
         }
     }
+
+    public void sendImpulse() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                if (gibFarbe(farbeGeben(x+1, y+1)) == getColor(INITIAL_POWER)) {
+                    impulse(x, y);
+                }
+            }
+        }
+    }
+
+    public void impulse(int x, int y) {
+        int[][] impulseGrid = new int[SIZE][SIZE]; // Hilfs-Array für Impulse
+        List<int[]> startImpulse = new ArrayList<>();
+        List<int[]> foodImpulse = new ArrayList<>();
+    
+        // Initialisierung der Impulse von Startpunkt und Food
+        startImpulse.add(new int[]{SIZE / 2, SIZE / 2}); // Starting point
+        foodImpulse.add(new int[]{SIZE / 2, SIZE / 2 + 7}); // Food point
+    
+        impulseGrid[SIZE / 2][SIZE / 2] = 1; // Markierung des Startpunkts
+        impulseGrid[SIZE / 2][SIZE / 2 + 7] = 2; // Markierung des Food-Punkts
+    
+        boolean connected = false;
+        int[] connectionPoint = null;
+    
+        while (!connected && (!startImpulse.isEmpty() || !foodImpulse.isEmpty())) {
+            // Impulse für Startpunkt ausbreiten
+            List<int[]> nextStartImpulse = new ArrayList<>();
+            for (int[] current : startImpulse) {
+                for (int[] neighbor : getShuffledNeighbors(current[0], current[1])) {
+                    int nx = neighbor[0];
+                    int ny = neighbor[1];
+                    if (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE) {
+                        if (impulseGrid[nx][ny] == 2) {
+                            // Verbindung gefunden
+                            connected = true;
+                            connectionPoint = new int[]{nx, ny};
+                            break;
+                        }
+                        if (impulseGrid[nx][ny] == 0 && farbeGeben(nx + 1, ny + 1).equals("grün")) {
+                            impulseGrid[nx][ny] = 1;
+                            nextStartImpulse.add(new int[]{nx, ny});
+                        }
+                    }
+                }
+                if (connected) break;
+            }
+            startImpulse = nextStartImpulse;
+    
+            // Impulse für Food ausbreiten
+            List<int[]> nextFoodImpulse = new ArrayList<>();
+            for (int[] current : foodImpulse) {
+                for (int[] neighbor : getShuffledNeighbors(current[0], current[1])) {
+                    int nx = neighbor[0];
+                    int ny = neighbor[1];
+                    if (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE) {
+                        if (impulseGrid[nx][ny] == 1) {
+                            // Verbindung gefunden
+                            connected = true;
+                            connectionPoint = new int[]{nx, ny};
+                            break;
+                        }
+                        if (impulseGrid[nx][ny] == 0 && farbeGeben(nx + 1, ny + 1).equals("grün")) {
+                            impulseGrid[nx][ny] = 2;
+                            nextFoodImpulse.add(new int[]{nx, ny});
+                        }
+                    }
+                }
+                if (connected) break;
+            }
+            foodImpulse = nextFoodImpulse;
+        }
+    
+        if (connected && connectionPoint != null) {
+            tracePath(connectionPoint, impulseGrid);
+        }
+    }
+    
+    private void tracePath(int[] connectionPoint, int[][] impulseGrid) {
+        int x = connectionPoint[0];
+        int y = connectionPoint[1];
+    
+        // Rückverfolgung zum Startpunkt
+        while (impulseGrid[x][y] == 1) {
+            farbeSetzen(x + 1, y + 1, Color.YELLOW);
+            for (int[] neighbor : getShuffledNeighbors(x, y)) {
+                int nx = neighbor[0];
+                int ny = neighbor[1];
+                if (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE && impulseGrid[nx][ny] == 1) {
+                    x = nx;
+                    y = ny;
+                    break;
+                }
+            }
+        }
+    
+        // Rückverfolgung zum Food-Punkt
+        x = connectionPoint[0];
+        y = connectionPoint[1];
+        while (impulseGrid[x][y] == 2) {
+            farbeSetzen(x + 1, y + 1, Color.YELLOW);
+            for (int[] neighbor : getShuffledNeighbors(x, y)) {
+                int nx = neighbor[0];
+                int ny = neighbor[1];
+                if (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE && impulseGrid[nx][ny] == 2) {
+                    x = nx;
+                    y = ny;
+                    break;
+                }
+            }
+        }
+    }    
 
     public static void main(String[] args) {
         new Simulation2();
