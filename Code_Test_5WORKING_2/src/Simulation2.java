@@ -8,6 +8,7 @@ public class Simulation2 extends Kaestchen {
 
     private static final int SIZE = 40;
     private static final int INITIAL_POWER = 30;
+    private static final int SPEED = 200;
 
     private int[][] powerGrid = new int[SIZE][SIZE];
     private Random random = new Random();
@@ -15,7 +16,7 @@ public class Simulation2 extends Kaestchen {
     public Simulation2() {
         super(20, 20, SIZE, SIZE);
         initialize();
-        tickerStart(1, 200);
+        tickerStart(1, SPEED);
         testausgabe();
     }
 
@@ -42,6 +43,9 @@ public class Simulation2 extends Kaestchen {
         if (nr == 1) { // first grow phase
             grow();
             repaint();
+        }
+        if (nr == 2) {
+            
         }
     }
 
@@ -85,7 +89,10 @@ public class Simulation2 extends Kaestchen {
             }
         }
         powerGrid = newPowerGrid;
-        //if (idk == 0) tickerStop(1);
+        if (idk == 0) {
+            tickerStop(1);
+            tickerStart(2, SPEED);
+        }
         testausgabe();
     }
 
