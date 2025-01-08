@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Simulation extends Kaestchen {
+public class Simulation2 extends Kaestchen {
 
     private static final int SIZE = 40;
-    private static final int INITIAL_POWER = 20;
+    private static final int INITIAL_POWER = 30;
 
     private int[][] powerGrid = new int[SIZE][SIZE];
     private Random random = new Random();
 
-    public Simulation() {
+    public Simulation2() {
         super(20, 20, SIZE, SIZE);
         initialize();
         tickerStart(1, 200);
@@ -25,18 +25,24 @@ public class Simulation extends Kaestchen {
         farbeSetzen(SIZE/2+1, SIZE/2+1, getColor(INITIAL_POWER));
 
         // food
-        farbeSetzen(SIZE/2+1, SIZE/2+6, Color.ORANGE);
+        farbeSetzen(SIZE/2+1, SIZE/2+8, Color.ORANGE);
 
         //wall
         for (int i = 0; i < SIZE; i++) {
             farbeSetzen(i, SIZE/2+4, getColor(-1));
         }
         farbeSetzen(SIZE/2+1, SIZE/2+4, "durchsichtig");
+
+        for (int i = SIZE/4+5; i < SIZE/4*3-7; i++) {
+            farbeSetzen(i, SIZE/2+6, getColor(-1));
+        }
     }
 
     public void tick(int nr) {
-        grow();
-        repaint();
+        if (nr == 1) { // first grow phase
+            grow();
+            repaint();
+        }
     }
 
 
@@ -79,9 +85,8 @@ public class Simulation extends Kaestchen {
             }
         }
         powerGrid = newPowerGrid;
-        if (idk == 0) tickerStop(1);
+        //if (idk == 0) tickerStop(1);
         testausgabe();
-        repaint();
     }
 
     public int check(int x, int y, int value) {
@@ -124,7 +129,7 @@ public class Simulation extends Kaestchen {
     }
 
     public static void main(String[] args) {
-        new Simulation();
+        new Simulation2();
     }
 
     public void testausgabe() {
