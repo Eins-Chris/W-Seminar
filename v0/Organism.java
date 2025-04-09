@@ -66,7 +66,6 @@ public class Organism extends Thread {
                 int newXPos = xPos + dir[0];
                 int newYPos = yPos + dir[1];
     
-                // Bounds-Check (nicht außerhalb des Grids gehen)
                 if (newXPos>= 0 && newXPos < Project.SIZE && newYPos >= 0 && newYPos < Project.SIZE) {
 
                     /* 
