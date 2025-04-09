@@ -18,13 +18,13 @@ public class Organism extends Thread {
     public Organism() {
         this.xPos = 1 + (int) (Math.random() * (Project.SIZE));
         this.yPos = 1 + (int) (Math.random() * (Project.SIZE));
-        this.state = 0;
+        this.state = 1;
     }
 
     public Organism(int xPos, int yPos) {
         this.xPos = xPos;
         this.yPos = yPos;
-        this.state = 0;
+        this.state = 1;
     }
 
     @Override

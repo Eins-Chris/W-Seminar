@@ -21,11 +21,11 @@ public class Project extends V0Kaestchen {
     /* 
         VARIABLEN
     */
-    public Organism[][] organism_matrix = new Organism[SIZE][SIZE];
+    public Organism[][] organism_matrix = new Organism[SIZE+1][SIZE+1];
     public ArrayList<Organism> organism_list = new ArrayList<>();
     public boolean project_running = false;
     public static final int SIZE = 100;
-    public static final int QUANTITY = 3;
+    public static final int QUANTITY = 5;
     public static final int STEP_TIME = 1000; // in Millisekunden
     
     
@@ -50,7 +50,7 @@ public class Project extends V0Kaestchen {
     }
 
     public Project() {
-        super(10,10,100,100);
+        super(10,10,SIZE,SIZE);
         init();
         start();
     }
@@ -63,11 +63,12 @@ public class Project extends V0Kaestchen {
         for (Organism organism : organism_list) {
             organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
         }
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < SIZE+1; i++) {
+            for (int j = 0; j < SIZE+1; j++) {
                 if (organism_matrix[i][j] != null) farbeSetzen(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
             }
         }
+        repaint();
     }
 
     public Color getColorfromState(int state) {
@@ -82,12 +83,17 @@ public class Project extends V0Kaestchen {
         for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
         project_running = true;
         while (project_running) {
+            
+            print();
+
+            /*
+                2 Ticks pro Sekunde 
+             */
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            print();
         }
     }
 }
