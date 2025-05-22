@@ -16,8 +16,8 @@ public class Organism extends Thread {
     }
 
     public Organism() {
-        this.xPos = 1 + (int) (Math.random() * (Project.SIZE));
-        this.yPos = 1 + (int) (Math.random() * (Project.SIZE));
+        this.xPos = 1 + (int) (Math.random() * (GRIDSIZE));
+        this.yPos = 1 + (int) (Math.random() * (GRIDSIZE));
         this.state = 1;
     }
 
@@ -31,14 +31,14 @@ public class Organism extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(Project.STEP_TIME);
+                Thread.sleep(STEP_TIME);
             } catch (InterruptedException e) { 
                 e.printStackTrace(); 
             }
         
             int[][] directions;
-            if (Project.DIRECTIONAL) {
-                switch (Project.DIRECTIONS) {
+            if (DIRECTIONAL) {
+                switch (DIRECTIONS) {
                     case 2:
                         directions = new int[][] {{1, 0}, {-1, 0}};
                         break;
@@ -66,12 +66,12 @@ public class Organism extends Thread {
                 int newXPos = xPos + dir[0];
                 int newYPos = yPos + dir[1];
     
-                if (newXPos>= 0 && newXPos < Project.SIZE && newYPos >= 0 && newYPos < Project.SIZE) {
+                if (newXPos>= 0 && newXPos < GRIDSIZE && newYPos >= 0 && newYPos < GRIDSIZE) {
 
                     /* 
                         COOPERATIVITÄT
-                     */
-                    if (Project.COOPERATIVE) {
+                    */
+                    if (COOPERATIVE) {
                         
                     } else {
                         
