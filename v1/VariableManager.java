@@ -1,0 +1,59 @@
+package v1;
+
+public class VariableManager {
+    
+    /* 
+        WACHSTUMSDYNAMIKEN UND AUSBREITUNGSSTRATEGIEN
+    */
+    public boolean DIRECTIONAL = true;
+    public int DIRECTIONS = 2;
+
+
+    /* 
+        RÄUMLICHE GEGEBENHEITEN
+    */
+    //
+    
+
+    /* 
+        GRAPHIK VARIABLEN
+    */
+    public int CELLSIZE = 10;
+    public int GRIDSIZE = 100;
+    
+    
+    /* 
+    SIMULATION VARIABLEN
+    */
+    public int STEP_TIME = 1000; // in Millisekunden
+    public int QUANTITY = 5;
+    
+
+    /* 
+        SPÄTER NOCH UMZUSETZEN
+    */
+        // Cooperation zwischen Organismen beim Zusammentreffen
+            public boolean COOPERATIVE = false;
+        // Wenn keine Cooperation besteht, wer gewinnt unter welchen Bedingungen
+        // Wie abhängig ist der Organismus von ursprungskriterien (Startpunkt)
+        // Unterschiede freie Flächen | eingeschränkte Räume | vlt Labyrinth
+        // interne Ressourcenweitergabe (Ressourcenaufnahme auf einer Seite / einem Arm -> Ausbreitung nur an diesem Arm oder auch an anderen Armen?)
+        // bevorzugt "breitere" Passagen oder offene Wege eher, bevor sich durch Passagen der Dicke ? ausgebreitet wird.
+        // aggressive oder passive Ausbreitungsart (state)
+
+
+
+    // Controller-Funktionalität
+    public void updateFromInputs(int[] intValues, boolean[] boolValues) {
+        DIRECTIONS = intValues[0];
+        CELLSIZE = intValues[1];
+        GRIDSIZE = intValues[2];
+        STEP_TIME = intValues[3];
+        QUANTITY = intValues[4];
+
+        DIRECTIONAL = boolValues[0];
+        COOPERATIVE = boolValues[1];
+
+        Project.run(this); // run() erwartet nun VariableManager statt VariableModel
+    }
+}
