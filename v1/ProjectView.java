@@ -7,14 +7,19 @@ import java.awt.event.ComponentEvent;
 
 public class ProjectView extends JFrame {
 
-    private final VariableManager variable;
+    public final VariableManager variable;
     private GridPanel gridPanel;
     private JTextArea outputArea;
     private JTextField inputField;
     private final int margin = 50;
 
+    public Color[][] matrix;
+
     public ProjectView(VariableManager variable) {
         this.variable = variable;
+
+        matrix = new Color[variable.GRIDSIZE][variable.GRIDSIZE];
+        init();
 
         setTitle("Christian Scharl - W-Seminar Simulation");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,13 +32,21 @@ public class ProjectView extends JFrame {
         setVisible(true); // Muss nach Komponenteninitialisierung erfolgen
     }
 
+    public void init() {
+        for (int x = 0; x < variable.GRIDSIZE; x++) {
+            for (int y = 0; y < variable.GRIDSIZE; y++) {
+                set(x, y, Color.DARK_GRAY);
+            }
+        }
+    }
+
     private void initComponents() {
         // Linker Bereich mit null-Layout (freie Platzierung)
         JPanel leftPanel = new JPanel(null);
         leftPanel.setBackground(Color.WHITE);
 
         // GridPanel (wird später skaliert)
-        gridPanel = new GridPanel(variable.GRIDSIZE);
+        gridPanel = new GridPanel(variable.GRIDSIZE, matrix);
         gridPanel.setBackground(Color.WHITE);
         leftPanel.add(gridPanel);
 
@@ -94,6 +107,7 @@ public class ProjectView extends JFrame {
         // Unten: Eingabefeld
         inputField = new JTextField();
         inputField.setPreferredSize(new Dimension(400, 30));
+        inputField.addActionListener(e -> onCommandSubmit());
         rightPanel.add(inputField, BorderLayout.SOUTH);
 
         return rightPanel;
@@ -102,9 +116,11 @@ public class ProjectView extends JFrame {
     // Zeichnet das Grid
     private static class GridPanel extends JPanel {
         private final int gridSize;
+        private Color[][] matrix;
 
-        public GridPanel(int gridSize) {
+        public GridPanel(int gridSize, Color[][] matrix) {
             this.gridSize = gridSize;
+            this.matrix = matrix;
         }
 
         @Override
@@ -131,16 +147,62 @@ public class ProjectView extends JFrame {
             int end = (int) (gridSize * cellSize);
             g.drawLine(end - 1, 0, end - 1, size);  // rechte Linie
             g.drawLine(0, end - 1, size, end - 1);  // untere Linie
-        }
 
+            for (int x = 0; x < gridSize; x++) {
+                for (int y = 0; y < gridSize; y++) {
+                    g.setColor(matrix[x][y]);
+					g.fillRect((int) (1 + x * cellSize + 1), (int) (1 + y * cellSize + 1), (int) cellSize - 1, (int) cellSize - 1);
+                }
+            }
+        }
     }
 
     // Getter für Input/Output-Felder (optional)
+    public String getOutput() {
+        return outputArea.getText();
+    }
     public JTextArea getOutputArea() {
         return outputArea;
     }
-
-    public JTextField getInputField() {
-        return inputField;
+    public void output(String output) {
+        outputArea.setText(getOutput() + "\n" + output);
+    }
+    public String getInput() {
+        return inputField.getText();
+    }
+    public void setInputText(String inputText) {
+        inputField.setText(inputText);
+    }
+    public void onCommandSubmit() {
+        if (getInput().charAt(0) == '/') {
+            new CommandExecutor(getInput().substring(1, getInput().length()), this).start();
+        } else {
+            output("[Input] - " + getInput());
+            output("[ERROR] - Wrong syntax! Missing '/'");
+        }
+        setInputText("");
+    }
+    public void set(int x, int y, Color color) {
+        if (check(x, y)) {
+            matrix[x][y] = color;
+        }
+        repaint();
+    }
+    public Color get(int x, int y) {
+        if (check(x, y)) {
+            return matrix[x][y];
+        } else return null;
+    }
+    public boolean check(int x, int y) {
+        if (x < variable.GRIDSIZE && x >= 0 && y < variable.GRIDSIZE && y >= 0) {
+            return true;
+        } else {
+            int size = variable.GRIDSIZE-1;
+            output("[ERROR] X: " + x + " or Y: " + y + " are out of grid! Grid from 0 - " + size);
+            return false;
+        }
+    }
+    public void start() {
+        
     }
 }

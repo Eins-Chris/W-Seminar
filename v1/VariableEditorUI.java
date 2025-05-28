@@ -63,7 +63,7 @@ public class VariableEditorUI extends JFrame {
         startButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         startButton.setPreferredSize(new Dimension(0, 40));
         startButton.addActionListener(e -> onSubmit());
-
+        
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         mainPanel.add(startButton, BorderLayout.SOUTH);
         add(mainPanel);
@@ -83,7 +83,7 @@ public class VariableEditorUI extends JFrame {
             }
             dispose();
 
-            System.out.println("[Temporär] Ende GUI! (VariableEditorUI.java - 86)");
+            System.out.println("[Temporär] Ende VariableUI! (VariableEditorUI.java - 86)");
             
             manager.updateFromInputs(intValues, boolValues);
         } catch (NumberFormatException e) {

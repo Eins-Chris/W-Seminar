@@ -10,7 +10,7 @@ public class Project {
     }
 
     public VariableManager variable = new VariableManager();
-    public Organism[][] organism_matrix = new Organism[variable.GRIDSIZE+1][variable.GRIDSIZE+1];
+    public Organism[][] organism_matrix = new Organism[variable.GRIDSIZE][variable.GRIDSIZE];
     public ArrayList<Organism> organism_list = new ArrayList<>();
     public boolean project_running = false;
     public ProjectView view;
@@ -18,15 +18,15 @@ public class Project {
     public Project(VariableManager variable) {
         this.variable = variable;
         view = new ProjectView(variable);
+        view.output("[Temporär] Projectstart! (Project.java - 21)");
 
-        System.out.println("[Temporär] Projectstart! (Project.java - 22)");
-
-        //init();
+        init();
         //start();
     }
 
     public void init() {
-        for (int i = 0; i < variable.QUANTITY; i++) organism_list.add(new Organism(variable));
+        //for (int i = 0; i < variable.QUANTITY; i++) organism_list.add(new Organism(variable));
+        view.setInputText("/start");
     }
 
     public void start() {
@@ -51,12 +51,13 @@ public class Project {
         for (Organism organism : organism_list) {
             organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
         }
-        for (int i = 0; i < variable.GRIDSIZE+1; i++) {
-            for (int j = 0; j < variable.GRIDSIZE+1; j++) {
-                if (organism_matrix[i][j] != null) {}//farbeSetzen(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
+        for (int i = 0; i < variable.GRIDSIZE; i++) {
+            for (int j = 0; j < variable.GRIDSIZE; j++) {
+                if (organism_matrix[i][j] != null) {
+                    view.set(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
+                }//farbeSetzen(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
             }
         }
-        //repaint();
     }
 
     public Color getColorfromState(int state) {
