@@ -4,19 +4,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
 
 public class ProjectView extends JFrame {
 
-    public final VariableManager variable;
+    public static void run(VariableManager manager) {
+        new ProjectView(manager);
+    }
+
+    private VariableManager variable;
+    private Organism[][] organism_matrix;
+    public ArrayList<Organism> organism_list = new ArrayList<>();
+    private boolean project_running = false;
     private GridPanel gridPanel;
     private JTextArea outputArea;
     private JTextField inputField;
     private final int margin = 50;
 
-    public Color[][] matrix;
+    private Color[][] matrix;
 
     public ProjectView(VariableManager variable) {
         this.variable = variable;
+        organism_matrix = new Organism[variable.GRIDSIZE][variable.GRIDSIZE];
 
         matrix = new Color[variable.GRIDSIZE][variable.GRIDSIZE];
         init();
@@ -68,7 +77,6 @@ public class ProjectView extends JFrame {
         // Initiale Größenberechnung
         resizeGridPanel(leftPanel);
     }
-
     private void resizeGridPanel(JPanel leftPanel) {
         int contentHeight = getContentPane().getHeight();
         int gridSizePixels = (int) (contentHeight * 0.85);
@@ -81,7 +89,6 @@ public class ProjectView extends JFrame {
         leftPanel.setPreferredSize(new Dimension(totalLeftWidth, contentHeight));
         leftPanel.revalidate();
     }
-
     private JPanel buildRightPanel() {
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBackground(Color.DARK_GRAY);
@@ -157,7 +164,6 @@ public class ProjectView extends JFrame {
         }
     }
 
-    // Getter für Input/Output-Felder (optional)
     public String getOutput() {
         return outputArea.getText();
     }
@@ -182,6 +188,13 @@ public class ProjectView extends JFrame {
         }
         setInputText("");
     }
+    public void setRunning(boolean project_running) {
+        this.project_running = project_running;
+    }
+    public VariableManager getVariable() {
+        return variable;
+    }
+
     public void set(int x, int y, Color color) {
         if (check(x, y)) {
             matrix[x][y] = color;
@@ -202,7 +215,43 @@ public class ProjectView extends JFrame {
             return false;
         }
     }
+    public void print() {
+        output("[RUNNING] - print - Start");
+        for (Organism organism : organism_list) {
+            organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
+        }
+        for (int i = 0; i < variable.GRIDSIZE; i++) {
+            for (int j = 0; j < variable.GRIDSIZE; j++) {
+                if (organism_matrix[i][j] != null) {
+                    output("[RUNNING] - print - " + organism_matrix[i][j].getCellState());
+                    set(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
+                }
+            }
+        }
+    }
+    public Color getColorfromState(int state) {
+        switch (state) {
+            case 0: return Color.GREEN;
+            case 1: return Color.YELLOW;
+            default: return Color.GRAY;
+        }
+    }
     public void start() {
-        
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
+        project_running = true;
+        while (project_running) {
+
+            print();
+            output("[RUNNING] - start - StartMethod!");
+
+            /*
+                2 Ticks pro Sekunde 
+            */
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

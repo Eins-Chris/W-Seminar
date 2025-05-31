@@ -55,7 +55,7 @@ public class Project {
             for (int j = 0; j < variable.GRIDSIZE; j++) {
                 if (organism_matrix[i][j] != null) {
                     view.set(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
-                }//farbeSetzen(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
+                }
             }
         }
     }

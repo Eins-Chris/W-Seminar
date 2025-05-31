@@ -54,6 +54,7 @@ public class VariableManager {
         DIRECTIONAL = boolValues[0];
         COOPERATIVE = boolValues[1];
 
-        Project.run(this); // run() erwartet nun VariableManager statt VariableModel
+        // Project.run(this); // run() erwartet nun VariableManager statt VariableModel
+        ProjectView.run(this);
     }
 }

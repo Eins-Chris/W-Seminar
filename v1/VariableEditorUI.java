@@ -82,8 +82,6 @@ public class VariableEditorUI extends JFrame {
                 boolValues[i] = boolSwitches[i].isOn();
             }
             dispose();
-
-            System.out.println("[Temporär] Ende VariableUI! (VariableEditorUI.java - 86)");
             
             manager.updateFromInputs(intValues, boolValues);
         } catch (NumberFormatException e) {

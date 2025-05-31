@@ -1,7 +1,5 @@
 package v1;
 
-import java.awt.Color;
-
 import javax.swing.SwingUtilities;
 
 public class CommandExecutor extends Thread {
@@ -22,8 +20,10 @@ public class CommandExecutor extends Thread {
         if (!command.contains("(")) {
             switch (command) {
                 case "start":
-                    view.set(10, 10, Color.WHITE);
+                    view.start();
                     break;
+                case "stop":
+                    view.setRunning(false);
                 case "reset":
                     view.init();
                     break;
@@ -57,9 +57,9 @@ public class CommandExecutor extends Thread {
                             if (getArgsLength() != 2) {
                                 view.output("[ERROR] - Wrong syntax! Use: /setOrganism(int, int)");
                             } else {
-                                new Organism(view.variable, getiArgs(0), getiArgs(1));
+                                view.organism_list.add(new Organism(view.getVariable(), getiArgs(0), getiArgs(1)));
                             }
-                        break;
+                            break;
                         default:
                             view.output("[ERROR] - Unknown command '/" + command + "'");
                             break;
@@ -67,6 +67,7 @@ public class CommandExecutor extends Thread {
                 }
             }
         }
+        view.print();
     }
 
     private void initintargs() {
