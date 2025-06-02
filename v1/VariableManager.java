@@ -18,15 +18,14 @@ public class VariableManager {
     /* 
         GRAPHIK VARIABLEN
     */
-    public int CELLSIZE = 10;
-    public int GRIDSIZE = 100;
+    public int GRIDSIZE = 10;
     
     
     /* 
     SIMULATION VARIABLEN
     */
-    public int STEP_TIME = 1000; // in Millisekunden
-    public int QUANTITY = 5;
+    public int STEP_TIME = 500;
+    public int QUANTITY = 0;
     
 
     /* 
@@ -46,15 +45,13 @@ public class VariableManager {
     // Controller-Funktionalität
     public void updateFromInputs(int[] intValues, boolean[] boolValues) {
         DIRECTIONS = intValues[0];
-        CELLSIZE = intValues[1];
-        GRIDSIZE = intValues[2];
-        STEP_TIME = intValues[3];
-        QUANTITY = intValues[4];
+        GRIDSIZE = intValues[1];
+        STEP_TIME = intValues[2];
+        QUANTITY = intValues[3];
 
         DIRECTIONAL = boolValues[0];
         COOPERATIVE = boolValues[1];
 
-        // Project.run(this); // run() erwartet nun VariableManager statt VariableModel
         ProjectView.run(this);
     }
 }

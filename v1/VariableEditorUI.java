@@ -4,10 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VariableEditorUI extends JFrame {
-    private final JTextField[] intFields = new JTextField[5];
-    private final ToggleSwitch[] boolSwitches = new ToggleSwitch[2];
-    private final String[] intNames = {"DIRECTIONS", "CELLSIZE", "GRIDSIZE", "STEP_TIME", "QUANTITY"};
-    private final String[] boolNames = {"DIRECTIONAL", "COOPERATIVE"};
+    private final JTextField[] intFields = new JTextField[4];                                                       // int
+    private final ToggleSwitch[] boolSwitches = new ToggleSwitch[2];                                                // bool
+    private final String[] intNames = {"DIRECTIONS", "GRIDSIZE", "STEP_TIME", "QUANTITY"};                          // int
+    private final String[] boolNames = {"DIRECTIONAL", "COOPERATIVE"};                                              // bool
     private final VariableManager manager;
 
     public VariableEditorUI(VariableManager manager) {
@@ -28,7 +28,7 @@ public class VariableEditorUI extends JFrame {
         // Integer Panel
         JPanel intPanel = new JPanel(new GridLayout(6, 2, 10, 15));
         intPanel.setBorder(BorderFactory.createTitledBorder("Integer Parameter"));
-        int[] values = {manager.DIRECTIONS, manager.CELLSIZE, manager.GRIDSIZE, manager.STEP_TIME, manager.QUANTITY};
+        int[] values = {manager.DIRECTIONS, manager.GRIDSIZE, manager.STEP_TIME, manager.QUANTITY};                 // int
 
         for (int i = 0; i < intFields.length; i++) {
             intPanel.add(new JLabel(intNames[i] + ":"));
@@ -46,7 +46,7 @@ public class VariableEditorUI extends JFrame {
         // Boolean Panel
         JPanel boolPanel = new JPanel(new GridLayout(6, 2, 10, 15));
         boolPanel.setBorder(BorderFactory.createTitledBorder("Boolean Parameter"));
-        boolean[] boolValues = {manager.DIRECTIONAL, manager.COOPERATIVE};
+        boolean[] boolValues = {manager.DIRECTIONAL, manager.COOPERATIVE};                                          // bool
 
         for (int i = 0; i < boolSwitches.length; i++) {
             boolPanel.add(new JLabel(boolNames[i] + ":"));

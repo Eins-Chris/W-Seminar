@@ -38,6 +38,7 @@ public class ProjectView extends JFrame {
         getContentPane().setLayout(new BorderLayout());
 
         initComponents();
+        initQuantity();
         setVisible(true); // Muss nach Komponenteninitialisierung erfolgen
     }
 
@@ -75,6 +76,14 @@ public class ProjectView extends JFrame {
 
         // Initiale Größenberechnung
         resizeGridPanel(leftPanel);
+    }
+    public void initQuantity() {
+        if (variable.QUANTITY > 0) {
+            for (int i = 0; i < variable.QUANTITY; i++) {
+                organism_list.add(new Organism(variable));
+            }
+            print();
+        }
     }
     private void resizeGridPanel(JPanel leftPanel) {
         int contentHeight = getContentPane().getHeight();

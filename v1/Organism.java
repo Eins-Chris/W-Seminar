@@ -21,8 +21,8 @@ public class Organism extends Thread {
 
     public Organism(VariableManager variable) {
         this.variable = variable;
-        this.xPos = 1 + (int) (Math.random() * (variable.GRIDSIZE));
-        this.yPos = 1 + (int) (Math.random() * (variable.GRIDSIZE));
+        this.xPos = (int) (Math.random() * (variable.GRIDSIZE));
+        this.yPos = (int) (Math.random() * (variable.GRIDSIZE));
         this.state = 1;
     }
 
