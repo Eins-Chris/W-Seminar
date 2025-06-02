@@ -14,7 +14,7 @@ public class ProjectView extends JFrame {
 
     private VariableManager variable;
     private Organism[][] organism_matrix;
-    public ArrayList<Organism> organism_list = new ArrayList<>();
+    public ArrayList<Organism> organism_list;
     private boolean project_running = false;
     private GridPanel gridPanel;
     private JTextArea outputArea;
@@ -26,6 +26,7 @@ public class ProjectView extends JFrame {
     public ProjectView(VariableManager variable) {
         this.variable = variable;
         organism_matrix = new Organism[variable.GRIDSIZE][variable.GRIDSIZE];
+        organism_list = new ArrayList<>();
 
         matrix = new Color[variable.GRIDSIZE][variable.GRIDSIZE];
         init();
@@ -80,7 +81,7 @@ public class ProjectView extends JFrame {
     public void initQuantity() {
         if (variable.QUANTITY > 0) {
             for (int i = 0; i < variable.QUANTITY; i++) {
-                organism_list.add(new Organism(variable));
+                organism_list.add(new Organism(this));
             }
             print();
         }
@@ -249,8 +250,14 @@ public class ProjectView extends JFrame {
     }
     public void start() {
         for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).touched = true;
         project_running = true;
         while (project_running) {
+            for (Organism org : organism_list) {
+                if (!org.touched) {
+                    org.start();
+                }
+            }
             print();
             output("[Running]");
             try {
@@ -259,5 +266,20 @@ public class ProjectView extends JFrame {
                 e.printStackTrace();
             }
         }
+    }
+    public void step() {
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
+        print();
+        output("[Running]");
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).pause();
+        ArrayList<Organism> temporaryList = new ArrayList<>();
+        for (int i = 0; i < organism_list.size(); i++) temporaryList.add(i, organism_list.get(i));
+        organism_list.clear();
+        for (int i = 0; i < temporaryList.size(); i++) organism_list.add(i, new Organism(temporaryList.get(i)));
+        print();
+        output("[Stop]");
+    }
+    public void reset() {
+        //reset logic
     }
 }

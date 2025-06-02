@@ -23,8 +23,11 @@ public class CommandExecutor extends Thread {
                 case "stop":
                     view.stop();
                     break;
+                case "step":
+                    view.step();
+                    break;
                 case "reset":
-                    view.init();
+                    view.reset();
                     break;
                 case "end":
                     view.dispose();
@@ -53,7 +56,7 @@ public class CommandExecutor extends Thread {
                                 view.output("[ERROR] - Wrong syntax! Use: /setOrganism(int, int)");
                             } else {
                                 if (getiArgs(0) >= 0 && getiArgs(1) >= 0 && getiArgs(0) < view.getVariable().GRIDSIZE && getiArgs(1) < view.getVariable().GRIDSIZE) {
-                                    view.organism_list.add(new Organism(view.getVariable(), getiArgs(0), getiArgs(1)));
+                                    view.organism_list.add(new Organism(view, getiArgs(0), getiArgs(1)));
                                 } else view.output("[ERROR] - IndexOutOfBoundsException: Input (" + getiArgs(0) + "," + getiArgs(1) + ")   < 0 or >= " + view.getVariable().GRIDSIZE);
                             }
                             break;

@@ -1,11 +1,17 @@
 package v1;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Organism extends Thread {
     
     private int xPos, yPos;
     private int state;
+    private ProjectView view;
     private VariableManager variable;
     private boolean threadRunning = true;
+    public boolean touched = false;
 
     public int getXPos() {
         return xPos;
@@ -19,27 +25,29 @@ public class Organism extends Thread {
         return state;
     }
 
-    public Organism(VariableManager variable) {
-        this.variable = variable;
+    public Organism(ProjectView view) {
+        this.view = view;
+        this.variable = view.getVariable();
         this.xPos = (int) (Math.random() * (variable.GRIDSIZE));
         this.yPos = (int) (Math.random() * (variable.GRIDSIZE));
         this.state = 1;
     }
 
-    public Organism(VariableManager variable, int xPos, int yPos) {
-        this.variable = variable;
+    public Organism(ProjectView view, int xPos, int yPos) {
+        this.view = view;
+        this.variable = view.getVariable();
         this.xPos = xPos;
         this.yPos = yPos;
         this.state = 1;
     }
 
-    public Organism(VariableManager variable, int xPos, int yPos, int cellState) {
-        this(variable, xPos, yPos);
+    public Organism(ProjectView view, int xPos, int yPos, int cellState) {
+        this(view, xPos, yPos);
         this.state = cellState;
     }
 
     public Organism(Organism old) {
-        this(old.variable, old.getXPos(), old.getYPos(), old.state);
+        this(old.view, old.getXPos(), old.getYPos(), old.state);
     }
 
     public void pause() {
@@ -48,6 +56,7 @@ public class Organism extends Thread {
 
     @Override
     public void run() {
+        touched = true;
         while (threadRunning) {
             try {
                 Thread.sleep(variable.STEP_TIME);
@@ -55,47 +64,38 @@ public class Organism extends Thread {
                 e.printStackTrace(); 
             }
 
-            int[][] directions;
+            int[][] directions = new int[][] {
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+                {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+            };
             if (variable.DIRECTIONAL) {
-                switch (variable.DIRECTIONS) {
-                    case 2:
-                        directions = new int[][] {{1, 0}, {-1, 0}};
-                        break;
-                    case 4:
-                        directions = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-                        break;
-                    case 8:
-                        directions = new int[][] {
-                                {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-                                {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-                        };
-                        break;
-                    default:
-                        directions = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-                        break;
+                List<Integer> numbers = new ArrayList<>();
+                for (int i = 0; i < directions.length; i++) numbers.add(i);
+                Collections.shuffle(numbers);
+
+                int [][] newdir = new int[variable.DIRECTIONS][2];
+                for (int i = 0; i < variable.DIRECTIONS; i++) {
+                    newdir[i][0] = directions[numbers.get(i)][0];
+                    newdir[i][1] = directions[numbers.get(i)][1];
                 }
-            } else {
-                directions = new int[][] {
-                        {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-                        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-                };
+                directions = newdir;
             }
-    
+
             for (int[] dir : directions) {
                 int newXPos = xPos + dir[0];
                 int newYPos = yPos + dir[1];
-    
-                if (newXPos>= 0 && newXPos < variable.GRIDSIZE && newYPos >= 0 && newYPos < variable.GRIDSIZE) {
+                /* if (newXPos>= 0 && newXPos < variable.GRIDSIZE) xPos = newXPos;
+                if (newYPos>= 0 && newYPos < variable.GRIDSIZE) yPos = newYPos; */
 
-                    /* 
-                        COOPERATIVITÄT
-                    */
-                    if (variable.COOPERATIVE) {
-                        
-                    } else {
-                        
-                    }
+                /* 
+                    COOPERATIVITÄT
+                */
+                if (variable.COOPERATIVE) {
+                    
+                } else {
+                    
                 }
+                
             }
         }
     }
