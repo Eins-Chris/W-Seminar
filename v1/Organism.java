@@ -5,6 +5,7 @@ public class Organism extends Thread {
     private int xPos, yPos;
     private int state;
     private VariableManager variable;
+    private boolean threadRunning = true;
 
     public int getXPos() {
         return xPos;
@@ -32,15 +33,28 @@ public class Organism extends Thread {
         this.state = 1;
     }
 
+    public Organism(VariableManager variable, int xPos, int yPos, int cellState) {
+        this(variable, xPos, yPos);
+        this.state = cellState;
+    }
+
+    public Organism(Organism old) {
+        this(old.variable, old.getXPos(), old.getYPos(), old.state);
+    }
+
+    public void pause() {
+        threadRunning = false;
+    }
+
     @Override
     public void run() {
-        while (true) {
+        while (threadRunning) {
             try {
                 Thread.sleep(variable.STEP_TIME);
             } catch (InterruptedException e) { 
                 e.printStackTrace(); 
             }
-        
+
             int[][] directions;
             if (variable.DIRECTIONAL) {
                 switch (variable.DIRECTIONS) {

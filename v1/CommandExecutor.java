@@ -1,7 +1,5 @@
 package v1;
 
-import javax.swing.SwingUtilities;
-
 public class CommandExecutor extends Thread {
 
     private ProjectView view;
@@ -23,16 +21,13 @@ public class CommandExecutor extends Thread {
                     view.start();
                     break;
                 case "stop":
-                    view.setRunning(false);
+                    view.stop();
+                    break;
                 case "reset":
                     view.init();
                     break;
-                case "restart":
+                case "end":
                     view.dispose();
-                    SwingUtilities.invokeLater(() -> {
-                        VariableManager manager = new VariableManager();
-                        new VariableEditorUI(manager);
-                    });
                     break;
                 case "cls":
                     view.getOutputArea().setText("");
@@ -57,7 +52,9 @@ public class CommandExecutor extends Thread {
                             if (getArgsLength() != 2) {
                                 view.output("[ERROR] - Wrong syntax! Use: /setOrganism(int, int)");
                             } else {
-                                view.organism_list.add(new Organism(view.getVariable(), getiArgs(0), getiArgs(1)));
+                                if (getiArgs(0) >= 0 && getiArgs(1) >= 0 && getiArgs(0) < view.getVariable().GRIDSIZE && getiArgs(1) < view.getVariable().GRIDSIZE) {
+                                    view.organism_list.add(new Organism(view.getVariable(), getiArgs(0), getiArgs(1)));
+                                } else view.output("[ERROR] - IndexOutOfBoundsException: Input (" + getiArgs(0) + "," + getiArgs(1) + ")   < 0 or >= " + view.getVariable().GRIDSIZE);
                             }
                             break;
                         default:

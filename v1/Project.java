@@ -18,7 +18,6 @@ public class Project {
     public Project(VariableManager variable) {
         this.variable = variable;
         view = new ProjectView(variable);
-        view.output("[Temporär] Projectstart! (Project.java - 21)");
 
         init();
         //start();

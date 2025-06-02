@@ -48,7 +48,6 @@ public class ProjectView extends JFrame {
             }
         }
     }
-
     private void initComponents() {
         // Linker Bereich mit null-Layout (freie Platzierung)
         JPanel leftPanel = new JPanel(null);
@@ -120,7 +119,6 @@ public class ProjectView extends JFrame {
         return rightPanel;
     }
 
-    // Zeichnet das Grid
     private static class GridPanel extends JPanel {
         private final int gridSize;
         private Color[][] matrix;
@@ -188,9 +186,6 @@ public class ProjectView extends JFrame {
         }
         setInputText("");
     }
-    public void setRunning(boolean project_running) {
-        this.project_running = project_running;
-    }
     public VariableManager getVariable() {
         return variable;
     }
@@ -216,14 +211,12 @@ public class ProjectView extends JFrame {
         }
     }
     public void print() {
-        output("[RUNNING] - print - Start");
         for (Organism organism : organism_list) {
             organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
         }
         for (int i = 0; i < variable.GRIDSIZE; i++) {
             for (int j = 0; j < variable.GRIDSIZE; j++) {
                 if (organism_matrix[i][j] != null) {
-                    output("[RUNNING] - print - " + organism_matrix[i][j].getCellState());
                     set(i, j, getColorfromState(organism_matrix[i][j].getCellState()));
                 }
             }
@@ -236,19 +229,23 @@ public class ProjectView extends JFrame {
             default: return Color.GRAY;
         }
     }
+    public void stop() {
+        project_running = false;
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).pause();
+        ArrayList<Organism> temporaryList = new ArrayList<>();
+        for (int i = 0; i < organism_list.size(); i++) temporaryList.add(i, organism_list.get(i));
+        organism_list.clear();
+        for (int i = 0; i < temporaryList.size(); i++) organism_list.add(i, new Organism(temporaryList.get(i)));
+        output("[Stop]");
+    }
     public void start() {
         for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
         project_running = true;
         while (project_running) {
-
             print();
-            output("[RUNNING] - start - StartMethod!");
-
-            /*
-                2 Ticks pro Sekunde 
-            */
+            output("[Running]");
             try {
-                Thread.sleep(500);
+                Thread.sleep(variable.STEP_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
