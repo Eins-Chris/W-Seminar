@@ -14,6 +14,7 @@ public class ProjectView extends JFrame {
 
     private VariableManager variable;
     private Organism[][] organism_matrix;
+    private Arm[][] arm_matrix;
     public ArrayList<Organism> organism_list;
     private boolean project_running = false;
     private GridPanel gridPanel;
@@ -26,6 +27,7 @@ public class ProjectView extends JFrame {
     public ProjectView(VariableManager variable) {
         this.variable = variable;
         organism_matrix = new Organism[variable.GRIDSIZE][variable.GRIDSIZE];
+        arm_matrix = new Arm[variable.GRIDSIZE][variable.GRIDSIZE];
         organism_list = new ArrayList<>();
 
         matrix = new Color[variable.GRIDSIZE][variable.GRIDSIZE];
@@ -223,6 +225,17 @@ public class ProjectView extends JFrame {
     public void print() {
         for (Organism organism : organism_list) {
             organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
+            ArrayList<Arm> arms = new ArrayList<>(organism.getBody());
+            for (Arm arm : arms) {
+                arm_matrix[arm.getXPos()][arm.getYPos()] = arm;
+            }
+        }
+        for (int i = 0; i < variable.GRIDSIZE; i++) {
+            for (int j = 0; j < variable.GRIDSIZE; j++) {
+                if (arm_matrix[i][j] != null) {
+                    set(i, j, getColorfromState(arm_matrix[i][j].getCellState()));
+                }
+            }
         }
         for (int i = 0; i < variable.GRIDSIZE; i++) {
             for (int j = 0; j < variable.GRIDSIZE; j++) {
@@ -253,18 +266,23 @@ public class ProjectView extends JFrame {
         for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).touched = true;
         project_running = true;
         while (project_running) {
+            try {
+                Thread.sleep(variable.STEP_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             for (Organism org : organism_list) {
                 if (!org.touched) {
                     org.start();
                 }
             }
             print();
-            output("[Running]");
-            try {
-                Thread.sleep(variable.STEP_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for (Organism organism : organism_list) {
+                for (Arm arm : organism.getBody()) {
+                    arm.step();
+                }
             }
+            output("[Running]");
         }
     }
     public void step() {
@@ -280,6 +298,7 @@ public class ProjectView extends JFrame {
         output("[Stop]");
     }
     public void reset() {
-        //reset logic
+        ProjectView.run(variable);
+        dispose();
     }
 }

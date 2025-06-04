@@ -13,6 +13,41 @@ public class Organism extends Thread {
     private boolean threadRunning = true;
     public boolean touched = false;
 
+    private ArrayList<Arm> body = new ArrayList<>();
+
+    public Organism(ProjectView view) {
+        this.view = view;
+        this.variable = view.getVariable();
+        this.xPos = (int) (Math.random() * (variable.GRIDSIZE));
+        this.yPos = (int) (Math.random() * (variable.GRIDSIZE));
+        this.state = 1;
+    }
+
+    public Organism(ProjectView view, int xPos, int yPos) {
+        this(view);
+        this.xPos = xPos;
+        this.yPos = yPos;
+    }
+
+    public Organism(ProjectView view, int xPos, int yPos, int cellState) {
+        this(view, xPos, yPos);
+        this.state = cellState;
+    }
+
+    public Organism(ProjectView view, int xPos, int yPos, ArrayList<Arm> body) {
+        this(view, xPos, yPos);
+        this.body = body;
+    }
+
+    public Organism(ProjectView view, int xPos, int yPos, int cellState, ArrayList<Arm> body) {
+        this(view, xPos, yPos, cellState);
+        this.body = body;
+    }
+
+    public Organism(Organism old) {
+        this(old.view, old.getXPos(), old.getYPos(), old.state, old.body);
+    }
+
     public int getXPos() {
         return xPos;
     }
@@ -25,29 +60,8 @@ public class Organism extends Thread {
         return state;
     }
 
-    public Organism(ProjectView view) {
-        this.view = view;
-        this.variable = view.getVariable();
-        this.xPos = (int) (Math.random() * (variable.GRIDSIZE));
-        this.yPos = (int) (Math.random() * (variable.GRIDSIZE));
-        this.state = 1;
-    }
-
-    public Organism(ProjectView view, int xPos, int yPos) {
-        this.view = view;
-        this.variable = view.getVariable();
-        this.xPos = xPos;
-        this.yPos = yPos;
-        this.state = 1;
-    }
-
-    public Organism(ProjectView view, int xPos, int yPos, int cellState) {
-        this(view, xPos, yPos);
-        this.state = cellState;
-    }
-
-    public Organism(Organism old) {
-        this(old.view, old.getXPos(), old.getYPos(), old.state);
+    public ArrayList<Arm> getBody() {
+        return body;
     }
 
     public void pause() {
@@ -56,7 +70,6 @@ public class Organism extends Thread {
 
     @Override
     public void run() {
-        touched = true;
         while (threadRunning) {
             try {
                 Thread.sleep(variable.STEP_TIME);
@@ -64,7 +77,6 @@ public class Organism extends Thread {
                 e.printStackTrace(); 
             }
 
-            int[][] directions = new int[][] {
                 {1, 0}, {-1, 0}, {0, 1}, {0, -1},
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
             };

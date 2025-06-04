@@ -26,6 +26,7 @@ public class VariableManager {
     */
     public int STEP_TIME = 500;
     public int QUANTITY = 0;
+    public int BODY_SIZE = 6;
     
 
     /* 
@@ -48,6 +49,7 @@ public class VariableManager {
         GRIDSIZE = intValues[1];
         STEP_TIME = intValues[2];
         QUANTITY = intValues[3];
+        BODY_SIZE = intValues[4];
 
         DIRECTIONAL = boolValues[0];
         COOPERATIVE = boolValues[1];
