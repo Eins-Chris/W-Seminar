@@ -86,9 +86,9 @@ public class CommandExecutor extends Thread {
         return args.length;
     }
 
-    private String getSArgs(int index) {
+    /* private String getSArgs(int index) {
         return args[index];
-    }
+    } */
 
     private int getiArgs(int index) {
         initintargs();
