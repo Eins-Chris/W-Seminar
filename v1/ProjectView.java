@@ -190,11 +190,15 @@ public class ProjectView extends JFrame {
         inputField.setText(inputText);
     }
     public void onCommandSubmit() {
-        if (getInput().charAt(0) == '/') {
-            new CommandExecutor(getInput().substring(1, getInput().length()), this).start();
+        if (getInput().length() > 0) {
+            if (getInput().charAt(0) == '/') {
+                new CommandExecutor(getInput().substring(1, getInput().length()), this).start();
+            } else {
+                output("[Input] - " + getInput());
+                output("[ERROR] - Wrong syntax! Missing '/'");
+            }
         } else {
-            output("[Input] - " + getInput());
-            output("[ERROR] - Wrong syntax! Missing '/'");
+            return;
         }
         setInputText("");
     }
@@ -262,34 +266,33 @@ public class ProjectView extends JFrame {
         output("[Stop]");
     }
     public void start() {
-        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
-        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).touched = true;
         project_running = true;
         while (project_running) {
+            output("[Running]");
+            print();
+            for (Organism organism : organism_list) {
+                if (organism.run == 0) {
+                    organism.run++;
+                    organism.start();
+                    output("Organism == 0 - 1");
+                    output("Run: " + organism.run);
+                }
+                for (Arm arm : organism.getBody()) {
+                    arm.step();
+                }
+            }
+            
             try {
                 Thread.sleep(variable.STEP_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            for (Organism org : organism_list) {
-                if (!org.touched) {
-                    org.start();
-                }
-            }
-            print();
-            for (Organism organism : organism_list) {
-                for (Arm arm : organism.getBody()) {
-                    arm.step();
-                }
-            }
-            output("[Running]");
         }
     }
     public void step() {
         for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
         print();
         output("[Running]");
-        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).pause();
         ArrayList<Organism> temporaryList = new ArrayList<>();
         for (int i = 0; i < organism_list.size(); i++) temporaryList.add(i, organism_list.get(i));
         organism_list.clear();

@@ -10,8 +10,7 @@ public class Organism extends Thread {
     private int state;
     private ProjectView view;
     private VariableManager variable;
-    private boolean threadRunning = true;
-    public boolean touched = false;
+    public int run = 0;
 
     private ArrayList<Arm> body = new ArrayList<>();
 
@@ -39,13 +38,14 @@ public class Organism extends Thread {
         this.body = body;
     }
 
-    public Organism(ProjectView view, int xPos, int yPos, int cellState, ArrayList<Arm> body) {
+    public Organism(ProjectView view, int xPos, int yPos, int cellState, ArrayList<Arm> body, int run) {
         this(view, xPos, yPos, cellState);
         this.body = body;
+        this.run = run;
     }
 
     public Organism(Organism old) {
-        this(old.view, old.getXPos(), old.getYPos(), old.state, old.body);
+        this(old.view, old.getXPos(), old.getYPos(), old.state, old.body, old.run);
     }
 
     public int getXPos() {
@@ -65,21 +65,12 @@ public class Organism extends Thread {
     }
 
     public void pause() {
-        threadRunning = false;
+        // vlt nicht nötig, mal schauen
     }
 
     @Override
     public void run() {
-        touched = true;
-        /* while (threadRunning) {
-            try {
-                Thread.sleep(variable.STEP_TIME);
-            } catch (InterruptedException e) { 
-                e.printStackTrace(); 
-            }
-
-            
-        } */
+        run++;
         grow();
     }
 
@@ -100,14 +91,7 @@ public class Organism extends Thread {
             }
             directions = newdir;
         }
-
-        // Basisgröße: ganzzahlige Division
-        int baseSize = variable.BODY_SIZE / variable.DIRECTIONS;
-        // Rest, der verteilt werden muss
-        int remainder = variable.BODY_SIZE % variable.DIRECTIONS;
         int indexidk = 0;
-
-        int available = variable.BODY_SIZE;
         for (int[] dir : directions) {
             int xArm, yArm;
             int newXPos = xPos + dir[0];
@@ -115,19 +99,8 @@ public class Organism extends Thread {
             if (newXPos>= 0 && newXPos < variable.GRIDSIZE) xArm = newXPos; else xArm = xPos;
             if (newYPos>= 0 && newYPos < variable.GRIDSIZE) yArm = newYPos; else yArm = yPos;
 
-            /* view.output("Available - 1: " + available);
-            if (available >= 0) {
-                int idk = (int) Math.ceil(variable.BODY_SIZE / variable.DIRECTIONS);
-                int size;
-                if (idk < available) size = idk;
-                else size = available;
-                available -= size;
-                
-                body.add(new Arm(view, xArm, yArm, 2, dir, size));         
-                view.output("Size: " + size);
-                view.output("Available - 2: " + available);
-            } */
-
+            int baseSize = variable.BODY_SIZE / variable.DIRECTIONS;
+            int remainder = variable.BODY_SIZE % variable.DIRECTIONS;
             int size = baseSize + (indexidk < remainder ? 1 : 0);
             view.output("Richtung " + indexidk + ": Größe = " + size);
 
