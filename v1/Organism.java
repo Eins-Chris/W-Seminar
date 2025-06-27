@@ -10,6 +10,7 @@ public class Organism extends Thread {
     private int state;
     private ProjectView view;
     private VariableManager variable;
+    private boolean dead = false;
     public int run = 0;
 
     private ArrayList<Arm> body = new ArrayList<>();
@@ -64,6 +65,10 @@ public class Organism extends Thread {
         return body;
     }
 
+    public boolean isDead() {
+        return dead;
+    }
+
     public void pause() {
         // vlt nicht nötig, mal schauen
     }
@@ -72,6 +77,7 @@ public class Organism extends Thread {
     public void run() {
         run++;
         grow();
+        death();
     }
 
     public void grow() {
@@ -79,35 +85,49 @@ public class Organism extends Thread {
                 {1, 0}, {-1, 0}, {0, 1}, {0, -1},
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
         };
-        if (variable.DIRECTIONAL) {
-            List<Integer> numbers = new ArrayList<>();
-            for (int i = 0; i < directions.length; i++) numbers.add(i);
-            Collections.shuffle(numbers);
+        //if (variable.DIRECTIONAL) {
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i < directions.length; i++) numbers.add(i);
+        Collections.shuffle(numbers);
 
-            int [][] newdir = new int[variable.DIRECTIONS][2];
-            for (int i = 0; i < variable.DIRECTIONS; i++) {
-                newdir[i][0] = directions[numbers.get(i)][0];
-                newdir[i][1] = directions[numbers.get(i)][1];
-            }
-            directions = newdir;
+        int amount = variable.DIRECTIONAL ? variable.DIRECTIONS : 8;
+        int [][] newdir = new int[amount][2];
+        for (int i = 0; i < amount; i++) {
+            newdir[i][0] = directions[numbers.get(i)][0];
+            newdir[i][1] = directions[numbers.get(i)][1];
         }
+        directions = newdir;
+        //}
         int indexidk = 0;
         for (int[] dir : directions) {
             int xArm, yArm;
             int newXPos = xPos + dir[0];
             int newYPos = yPos + dir[1];
-            if (newXPos>= 0 && newXPos < variable.GRIDSIZE) xArm = newXPos; else xArm = xPos;
-            if (newYPos>= 0 && newYPos < variable.GRIDSIZE) yArm = newYPos; else yArm = yPos;
+            if (newXPos >= 0 && newXPos < variable.GRIDSIZE) xArm = newXPos; else xArm = xPos;
+            if (newYPos >= 0 && newYPos < variable.GRIDSIZE) yArm = newYPos; else yArm = yPos;
 
-            int baseSize = variable.BODY_SIZE / variable.DIRECTIONS;
-            int remainder = variable.BODY_SIZE % variable.DIRECTIONS;
+            int baseSize = variable.BODY_SIZE / amount;
+            int remainder = variable.BODY_SIZE % amount;
             int size = baseSize + (indexidk < remainder ? 1 : 0);
-            view.output("Richtung " + indexidk + ": Größe = " + size);
 
-            body.add(new Arm(view, xArm, yArm, 2, dir, size)); 
+            body.add(new Arm(view, this, xArm, yArm, 2, dir, size)); 
 
-            view.output("-----");
             indexidk++;
+        }
+    }
+
+    public void kill() {
+        dead = true;
+        death();
+    }
+
+    private void death() {
+        if (dead) {
+            for (int i = 0; i < body.size(); i++) {
+                body.get(i).kill();
+            }
+            state = -1;
+            view.output("--------------- KILLED!!!");
         }
     }
 }

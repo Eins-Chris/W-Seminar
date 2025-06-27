@@ -7,6 +7,8 @@ public class VariableManager {
     */
     public boolean DIRECTIONAL = true;
     public int DIRECTIONS = 2;
+    // Cooperation zwischen Organismen beim Zusammentreffen
+        public boolean COOPERATIVE = false;
 
 
     /* 
@@ -32,8 +34,6 @@ public class VariableManager {
     /* 
         SPÄTER NOCH UMZUSETZEN
     */
-        // Cooperation zwischen Organismen beim Zusammentreffen
-            public boolean COOPERATIVE = false;
         // Wenn keine Cooperation besteht, wer gewinnt unter welchen Bedingungen
         // Wie abhängig ist der Organismus von ursprungskriterien (Startpunkt)
         // Unterschiede freie Flächen | eingeschränkte Räume | vlt Labyrinth

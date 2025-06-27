@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProjectView extends JFrame {
 
@@ -14,7 +15,7 @@ public class ProjectView extends JFrame {
 
     private VariableManager variable;
     private Organism[][] organism_matrix;
-    private Arm[][] arm_matrix;
+    private Component[][] arm_matrix;
     public ArrayList<Organism> organism_list;
     private boolean project_running = false;
     private GridPanel gridPanel;
@@ -24,10 +25,18 @@ public class ProjectView extends JFrame {
 
     private Color[][] matrix;
 
+    public Organism[][] getOrganismMatrix() {
+        return organism_matrix;
+    }
+
+    public Component[][] getArmMatrix() {
+        return arm_matrix;
+    }
+
     public ProjectView(VariableManager variable) {
         this.variable = variable;
         organism_matrix = new Organism[variable.GRIDSIZE][variable.GRIDSIZE];
-        arm_matrix = new Arm[variable.GRIDSIZE][variable.GRIDSIZE];
+        arm_matrix = new Component[variable.GRIDSIZE][variable.GRIDSIZE];
         organism_list = new ArrayList<>();
 
         matrix = new Color[variable.GRIDSIZE][variable.GRIDSIZE];
@@ -231,7 +240,11 @@ public class ProjectView extends JFrame {
             organism_matrix[organism.getXPos()][organism.getYPos()] = organism;
             ArrayList<Arm> arms = new ArrayList<>(organism.getBody());
             for (Arm arm : arms) {
-                arm_matrix[arm.getXPos()][arm.getYPos()] = arm;
+                for (int i = 0; i < arm.body.size(); i++) {
+                    if (arm.body.get(i).getXPos() >= 0 && arm.body.get(i).getYPos() >= 0 && arm.body.get(i).getXPos() < variable.GRIDSIZE && arm.body.get(i).getYPos() < variable.GRIDSIZE) {
+                        arm_matrix[arm.body.get(i).getXPos()][arm.body.get(i).getYPos()] = arm.body.get(i);
+                    }
+                }
             }
         }
         for (int i = 0; i < variable.GRIDSIZE; i++) {
@@ -251,9 +264,10 @@ public class ProjectView extends JFrame {
     }
     public Color getColorfromState(int state) {
         switch (state) {
-            case 0: return Color.GREEN;
-            case 1: return Color.YELLOW;
-            default: return Color.GRAY;
+            case -1: return Color.DARK_GRAY;
+            case 1: return Color.GREEN;
+            case 2: return Color.YELLOW; 
+            default: return Color.RED;
         }
     }
     public void stop() {
@@ -268,18 +282,17 @@ public class ProjectView extends JFrame {
     public void start() {
         project_running = true;
         while (project_running) {
-            output("[Running]");
+            output("[TICK]");
             print();
             for (Organism organism : organism_list) {
                 if (organism.run == 0) {
                     organism.run++;
                     organism.start();
-                    output("Organism == 0 - 1");
-                    output("Run: " + organism.run);
                 }
-                for (Arm arm : organism.getBody()) {
-                    arm.step();
-                }
+                CopyOnWriteArrayList<Arm> armsSnapshot = new CopyOnWriteArrayList<>(organism.getBody());
+                    for (Arm arm : armsSnapshot) {
+                        arm.step();
+                    }
             }
             
             try {
@@ -290,15 +303,30 @@ public class ProjectView extends JFrame {
         }
     }
     public void step() {
-        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).start();
+        output("[TICK]");
         print();
-        output("[Running]");
+        for (Organism organism : organism_list) {
+            if (organism.run == 0) {
+                organism.run++;
+                organism.start();
+            }
+            CopyOnWriteArrayList<Arm> armsSnapshot = new CopyOnWriteArrayList<>(organism.getBody());
+            for (Arm arm : armsSnapshot) {
+                arm.step();
+            }
+        }
+
+        try {
+            Thread.sleep(variable.STEP_TIME);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        for (int i = 0; i < organism_list.size(); i++) organism_list.get(i).pause();
         ArrayList<Organism> temporaryList = new ArrayList<>();
         for (int i = 0; i < organism_list.size(); i++) temporaryList.add(i, organism_list.get(i));
         organism_list.clear();
         for (int i = 0; i < temporaryList.size(); i++) organism_list.add(i, new Organism(temporaryList.get(i)));
-        print();
-        output("[Stop]");
     }
     public void reset() {
         ProjectView.run(variable);
