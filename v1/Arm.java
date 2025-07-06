@@ -61,7 +61,7 @@ public class Arm {
                 } 
                 if (view.getArmMatrix()[newXPos][newYPos] != null && view.getArmMatrix()[newXPos][newYPos].getCellState() == 2 ) {
                     enemy = view.getArmMatrix()[newXPos][newYPos].getMother().getMother();
-                } 
+                }
                 if (enemy != null) {
                     if (!variable.COOPERATIVE) {
                         if (!enemy.equals(getMother())) {

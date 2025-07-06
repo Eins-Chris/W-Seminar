@@ -127,7 +127,7 @@ public class Organism extends Thread {
                 body.get(i).kill();
             }
             state = -1;
-            view.output("--------------- KILLED!!!");
+            view.output("--------------- KILLED ---");
         }
     }
 }

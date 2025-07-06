@@ -7,8 +7,7 @@ public class VariableManager {
     */
     public boolean DIRECTIONAL = true;
     public int DIRECTIONS = 2;
-    // Cooperation zwischen Organismen beim Zusammentreffen
-        public boolean COOPERATIVE = false;
+    public boolean COOPERATIVE = false;
 
 
     /* 
@@ -43,7 +42,6 @@ public class VariableManager {
 
 
 
-    // Controller-Funktionalität
     public void updateFromInputs(int[] intValues, boolean[] boolValues) {
         DIRECTIONS = intValues[0];
         GRIDSIZE = intValues[1];
