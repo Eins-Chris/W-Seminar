@@ -1,5 +1,7 @@
 package v1;
 
+import java.awt.Color;
+
 public class CommandExecutor extends Thread {
 
     private ProjectView view;
@@ -57,6 +59,24 @@ public class CommandExecutor extends Thread {
                             } else {
                                 if (getiArgs(0) >= 0 && getiArgs(1) >= 0 && getiArgs(0) < view.getVariable().GRIDSIZE && getiArgs(1) < view.getVariable().GRIDSIZE) {
                                     view.organism_list.add(new Organism(view, getiArgs(0), getiArgs(1)));
+                                } else view.output("[ERROR] - IndexOutOfBoundsException: Input (" + getiArgs(0) + "," + getiArgs(1) + ")   < 0 or >= " + view.getVariable().GRIDSIZE);
+                            }
+                            break;
+                        case "markp":
+                            if (getArgsLength() != 2) {
+                                view.output("[ERROR] - Wrong syntax! Use: /set(int, int)");
+                            } else {
+                                if (getiArgs(0) >= 0 && getiArgs(1) >= 0 && getiArgs(0) < view.getVariable().GRIDSIZE && getiArgs(1) < view.getVariable().GRIDSIZE) {
+                                    view.set(getiArgs(0), getiArgs(1), Color.PINK);
+                                } else view.output("[ERROR] - IndexOutOfBoundsException: Input (" + getiArgs(0) + "," + getiArgs(1) + ")   < 0 or >= " + view.getVariable().GRIDSIZE);
+                            }
+                            break;
+                        case "marky":
+                            if (getArgsLength() != 2) {
+                                view.output("[ERROR] - Wrong syntax! Use: /set(int, int)");
+                            } else {
+                                if (getiArgs(0) >= 0 && getiArgs(1) >= 0 && getiArgs(0) < view.getVariable().GRIDSIZE && getiArgs(1) < view.getVariable().GRIDSIZE) {
+                                    view.set(getiArgs(0), getiArgs(1), Color.YELLOW);
                                 } else view.output("[ERROR] - IndexOutOfBoundsException: Input (" + getiArgs(0) + "," + getiArgs(1) + ")   < 0 or >= " + view.getVariable().GRIDSIZE);
                             }
                             break;
